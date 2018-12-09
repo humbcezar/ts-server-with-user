@@ -3,6 +3,7 @@ import { Retrieval } from "../services/users/retrieval";
 import { Creator } from "../services/users/creator";
 import { injectable, inject } from "inversify";
 import "reflect-metadata";
+import { Error } from "mongoose";
 
 @injectable()
 export class UserController {
@@ -28,12 +29,12 @@ export class UserController {
 	 * @param req
 	 * @param res
 	 */
-	show = async (req: Request, res: Response): Promise<void> => {
+	show = async (req: Request, res: Response): Promise<Response> => {
 		try {
 			const user = await this.retrievalService.retrieve(req.params.userName);
-			res.send(user);
+			return res.send(user);
 		} catch (err) {
-			res.status(400).send(err.toString() + err.stack);
+			return res.status(400).send(err.toString() + err.stack);
 		}
 	};
 
@@ -43,12 +44,15 @@ export class UserController {
 	 * @param req
 	 * @param res
 	 */
-	store = async(req: Request, res: Response): Promise<void> => {
+	store = async(req: Request, res: Response): Promise<Response> => {
 		try {
 			const user = await this.creatorService.create(req.body);
-			res.send(user);
+			return res.send(user);
 		} catch (err) {
-			res.status(400).send(err.toString() + err.stack);
+			if (err instanceof Error.ValidationError) {
+				return res.status(400).send("Username or email already exists.");
+			}
+			return res.status(400).send(err.toString() + err.stack);
 		}
 	};
 }
