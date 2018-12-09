@@ -44,7 +44,7 @@ export class UserController {
 	 * @param req
 	 * @param res
 	 */
-	store = async(req: Request, res: Response): Promise<any> => {
+	store = async(req: Request, res: Response): Promise<Response> => {
 		try {
 			const user = await this.creatorService.create(req.body);
 			return res.send(user);
