@@ -1,6 +1,8 @@
 import { IUser, User } from "../../models/user";
+import { injectable } from "inversify";
+import "reflect-metadata";
 
-
+@injectable()
 export class Retrieval {
 	/**
 	 * Retrieves user

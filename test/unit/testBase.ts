@@ -1,5 +1,6 @@
 require("dotenv").config();
 import * as mongoose from "mongoose";
+import "jest";
 
 beforeEach(async() => {
 	if (mongoose.connection.readyState == 0) {

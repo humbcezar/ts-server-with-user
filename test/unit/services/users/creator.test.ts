@@ -2,7 +2,9 @@ import { Creator } from "../../../../src/services/users/creator";
 import { User } from "../../../../src/models/user";
 import * as assert from "assert";
 import { MongoError } from "mongodb";
-require("../../testBase");
+import { Error } from "mongoose";
+import "jest";
+import "../../testBase";
 
 describe("unit/services/users/creator.test.ts", () => {
 	describe("create(userData)", () => {
@@ -49,6 +51,18 @@ describe("unit/services/users/creator.test.ts", () => {
 			}
 			expect(error).toBeInstanceOf(MongoError);
 			expect(error.toString()).toContain("duplicate key");
+		});
+
+		it("should not create user with invalid email", async () => {
+			let error;
+			userData.email = "invalidemail.com";
+			try {
+				await creator.create(userData);
+			} catch (e) {
+				error = e;
+			}
+			expect(error).toBeInstanceOf(Error.ValidationError);
+			expect(error.toString()).toContain("address");
 		});
 	});
 });

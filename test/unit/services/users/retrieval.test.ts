@@ -1,7 +1,8 @@
 import { Retrieval } from "../../../../src/services/users/retrieval";
 import { User } from "../../../../src/models/user";
 import * as assert from "assert";
-require("../../testBase");
+import "jest";
+import "../../testBase";
 
 describe("unit/services/users/retrieval.test.ts", async () => {
 	describe("retrieve(userData)", () => {
@@ -12,7 +13,7 @@ describe("unit/services/users/retrieval.test.ts", async () => {
 			password: "testPassword"
 		};
 
-		afterAll(async () => {
+		afterEach(async () => {
 			await User.deleteMany({});
 		});
 

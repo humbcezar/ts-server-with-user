@@ -1,11 +1,14 @@
 import { IUser, User } from "../../models/user";
+import { injectable } from "inversify";
+import "reflect-metadata";
 
+@injectable()
 export class Creator {
 	/**
 	 * Create user
 	 *
 	 * @param userData
-	 * @returns {*}
+	 * @returns Promise<IUser>
 	 */
 	create(userData): Promise<IUser> {
 		const user = new User({

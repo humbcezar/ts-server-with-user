@@ -1,9 +1,23 @@
 import { Router } from "express";
-import userController from "../controllers/userController";
+import { UserController } from "../controllers/userController";
+import { injectable, inject } from "inversify";
 
-const router = Router();
+@injectable()
+export class ApiRouter {
+	private userController: UserController;
 
-router.get("/users/:userName", userController.show);
-router.post("/users", userController.store);
+	constructor(
+		@inject(UserController) userController: UserController
+	) {
+		this.userController = userController;
+	}
 
-export default router;
+	getRouter = (): Router => {
+		const router = Router();
+
+		router.get("/users/:userName", this.userController.show);
+		router.post("/users", this.userController.store);
+
+		return router;
+	};
+}

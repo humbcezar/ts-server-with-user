@@ -1,7 +1,10 @@
 import { Request, Response } from "express";
 import { Retrieval } from "../services/users/retrieval";
 import { Creator } from "../services/users/creator";
+import { injectable, inject } from "inversify";
+import "reflect-metadata";
 
+@injectable()
 export class UserController {
 
 	private retrievalService: Retrieval;
@@ -12,8 +15,8 @@ export class UserController {
 	 * @param creatorService
 	 */
 	constructor(
-		retrievalService: Retrieval,
-		creatorService: Creator
+		@inject(Retrieval) retrievalService: Retrieval,
+		@inject(Creator) creatorService: Creator
 	) {
 		this.retrievalService = retrievalService;
 		this.creatorService = creatorService;
@@ -49,5 +52,3 @@ export class UserController {
 		}
 	};
 }
-
-export default new UserController(new Retrieval(), new Creator());
