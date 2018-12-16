@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
-import { Retrieval } from "../services/users/retrieval";
-import { Creator } from "../services/users/creator";
+import { Retrieval } from "../Services/User/Retrieval";
+import { Creator } from "../Services/User/Creator";
 import { injectable, inject } from "inversify";
-import "reflect-metadata";
 import { Error } from "mongoose";
+import { MongoError } from "mongodb";
+import "reflect-metadata";
 
 @injectable()
 export class UserController {
@@ -49,7 +50,7 @@ export class UserController {
 			const user = await this.creatorService.create(req.body);
 			return res.send(user);
 		} catch (err) {
-			if (err instanceof Error.ValidationError) {
+			if (err instanceof Error.ValidationError || err instanceof MongoError ) {
 				return res.status(400).send("Username or email already exists.");
 			}
 			return res.status(400).send(err.toString() + err.stack);

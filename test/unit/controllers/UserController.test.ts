@@ -1,13 +1,13 @@
 import "../testBase";
 import "jest";
-import { UserController } from "../../../src/controllers/userController";
+import { UserController } from "../../../src/Controllers/UserController";
 import { anything, instance, mock, verify, when } from "ts-mockito";
-import { Retrieval } from "../../../src/services/users/retrieval";
-import { Creator } from "../../../src/services/users/creator";
+import { Retrieval } from "../../../src/Services/User/Retrieval";
+import { Creator } from "../../../src/Services/User/Creator";
 const mockReqRes = require("mock-req-res");
 import { Error } from "mongoose";
 
-describe("unit/controllers/userController.test.ts", () => {
+describe("unit/Controllers/UserController.test.ts", () => {
 
 	it("should show user", async () => {
 		const retrieval = mock(Retrieval);

@@ -1,12 +1,13 @@
-import { Retrieval } from "../../../../src/services/users/retrieval";
-import { User } from "../../../../src/models/user";
+import { Retrieval } from "../../../../src/Services/User/Retrieval";
+import { User } from "../../../../src/Models/User";
 import * as assert from "assert";
 import "jest";
 import "../../testBase";
 
-describe("unit/services/users/retrieval.test.ts", async () => {
+describe("unit/Services/User/Retrieval.test.ts", async () => {
 	describe("retrieve(userData)", () => {
-		const retrieval = new Retrieval();
+		const userModel = new User().getModelForClass(User);
+		const retrieval = new Retrieval(userModel);
 		const userData = {
 			username: "TestUser",
 			email: "valid@email.com",
@@ -14,11 +15,11 @@ describe("unit/services/users/retrieval.test.ts", async () => {
 		};
 
 		afterEach(async () => {
-			await User.deleteMany({});
+			await userModel.deleteMany({});
 		});
 
 		it("should retrieve a user", async () => {
-			await (new User(userData)).save();
+			await (new userModel(userData)).save();
 
 			const user = await retrieval.retrieve(userData.username);
 			assert.deepStrictEqual({
