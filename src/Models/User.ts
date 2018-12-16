@@ -1,11 +1,8 @@
 import { instanceMethod, plugin, prop, Typegoose } from "typegoose";
-import { injectable } from "inversify";
-import "reflect-metadata";
 
 @plugin(require("mongoose-bcrypt"),  {
 	fields: ["password"]
 })
-@injectable()
 export class User extends Typegoose {
 	@prop({
 		required: true,
