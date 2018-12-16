@@ -1,12 +1,12 @@
 import * as express from "express";
 import * as compression from "compression";
-import logger from "./util/logger";
+import logger from "./Util/logger";
 import * as morgan from "morgan";
 import * as mongoose from "mongoose";
 import * as errorHandler from "errorhandler";
 import * as dotenv from "dotenv";
 import container from "./inversify.config";
-import { ApiRouter } from "./routes/api";
+import { ApiRouter } from "./Routes/ApiRouter";
 
 dotenv.config();
 

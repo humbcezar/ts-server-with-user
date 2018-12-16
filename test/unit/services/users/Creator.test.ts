@@ -1,18 +1,20 @@
-import { Creator } from "../../../../src/services/users/creator";
-import { User } from "../../../../src/models/user";
+import { Creator } from "../../../../src/Services/User/Creator";
+import { User } from "../../../../src/Models/User";
 import * as assert from "assert";
 import { MongoError } from "mongodb";
 import { Error } from "mongoose";
 import "jest";
 import "../../testBase";
 
-describe("unit/services/users/creator.test.ts", () => {
+describe("unit/Services/User/Creator.test.ts", () => {
 	describe("create(userData)", () => {
+		const userModel = new User().getModelForClass(User);
+
 		afterAll(async () => {
-			await User.deleteMany({});
+			await userModel.deleteMany({});
 		});
 
-		const creator = new Creator();
+		const creator = new Creator(userModel);
 		const userData = {
 			username: "TestUser",
 			email: "valid@email.com",
