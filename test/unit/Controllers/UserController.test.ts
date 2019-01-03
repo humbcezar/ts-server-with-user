@@ -55,4 +55,5 @@ describe("unit/Controllers/UserController.test.ts", () => {
 		expect(response).toEqual("Username or email already exists.");
 
 	});
+
 });

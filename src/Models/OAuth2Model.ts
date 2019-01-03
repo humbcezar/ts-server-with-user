@@ -1,18 +1,18 @@
 import { OAuth2Token } from "./OAuth2Token";
 import { User } from "./User";
-import { Falsey, Token } from "oauth2-server";
+import {Falsey, RefreshToken, Token} from "oauth2-server";
 import { inject, injectable } from "inversify";
 import { ModelType } from "typegoose";
 import "reflect-metadata";
 
 @injectable()
 export class OAuth2Model {
-	private userModel: ModelType<User>;
-	private oauth2TokenModel: ModelType<OAuth2Token>;
+	private userModel: ModelType<User> & typeof User;
+	private oauth2TokenModel: ModelType<OAuth2Token> & typeof OAuth2Token;
 
 	constructor(
-		@inject(User) userModel: ModelType<User>,
-		@inject(OAuth2Token) oauth2TokenModel: ModelType<OAuth2Token>
+		@inject(User) userModel: ModelType<User> & typeof User,
+		@inject(OAuth2Token) oauth2TokenModel: ModelType<OAuth2Token> & typeof OAuth2Token
 	) {
 		this.userModel = userModel;
 		this.oauth2TokenModel = oauth2TokenModel;
@@ -40,40 +40,44 @@ export class OAuth2Model {
 	getClient(clientID, clientSecret, callback) {
 		const client = {
 			id: clientID,
-			grants: ["password"],
+			grants: ["password", "refresh_token"],
 		};
 		return callback(false, client);
 	}
 
 	saveToken(token, client, user): Promise<Token | Falsey> {
+		const userId = typeof user.id == "string" ? user.id : user.toString();
 		const oauth = {
 			accessToken: token.accessToken,
-			accessTokenExpiresOn: token.accessTokenExpiresAt,
+			accessTokenExpiresAt: token.accessTokenExpiresAt,
 			clientId: client.id,
-			userId: user.id,
+			user: userId
 		};
 
-		return this.oauth2TokenModel.findOneAndUpdate(
-			{userId: user.id},
-			oauth,
-			{upsert: true, new: true, runValidators: true}
-		).then((saveResult) => {
+		return this.oauth2TokenModel.updateOrCreate(
+			{user: userId},
+			oauth
+		).then(async (saveResult) => {
+			if (!saveResult.refreshToken) {
+				saveResult.refreshToken = token.refreshToken;
+				saveResult.refreshTokenExpiresAt = token.refreshTokenExpiresAt;
+				saveResult = await saveResult.save();
+			}
 			return {
 				accessToken: saveResult.accessToken,
-				accessTokenExpiresOn: saveResult.accessTokenExpiresOn,
+				accessTokenExpiresAt: saveResult.accessTokenExpiresAt,
 				refreshToken: saveResult.refreshToken,
-				refreshTokenExpiresOn: saveResult.refreshTokenExpiresOn,
+				refreshTokenExpiresAt: saveResult.refreshTokenExpiresAt,
 				clientId: saveResult.clientId,
-				userId: saveResult.userId,
+				userId: saveResult.user,
 				client: saveResult.clientId,
-				user: saveResult.userId
+				user: saveResult.user
 			};
 		});
 	}
 
 	getAccessToken(accessToken): Promise<Token | Falsey> {
 		return this.oauth2TokenModel.findOne({accessToken})
-			.populate("userID")
 			.exec()
 			.then((token) => {
 				if (!token) {
@@ -81,11 +85,37 @@ export class OAuth2Model {
 				}
 				return {
 					accessToken: token.accessToken,
-					accessTokenExpiresAt: token.accessTokenExpiresOn,
-					user: token.userId,
+					accessTokenExpiresAt: token.accessTokenExpiresAt,
+					user: token.user,
 					client: token.clientId
 				};
 			});
+	}
+
+	getRefreshToken(refreshToken): Promise<RefreshToken | Falsey> {
+		const client = {
+			id: "1",
+			grants: ["password", "refresh_token"],
+		};
+		return this.oauth2TokenModel.findOne({refreshToken})
+			.exec()
+			.then((token) => {
+				if (!token) {
+					return false;
+				}
+				return {
+					refreshToken: token.refreshToken,
+					refreshTokenExpiresAt: token.refreshTokenExpiresAt,
+					user: token.user,
+					client: client
+				};
+			});
+	}
+
+	revokeToken(token): Promise<boolean> {
+		return new Promise((resolve, reject) => {
+			resolve(true);
+		});
 	}
 
 	verifyScope(accessToken, scope): Promise<boolean> {

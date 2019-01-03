@@ -22,7 +22,8 @@ export class Creator {
 		const user = new this.userModel({
 			username: userData.username,
 			email: userData.email,
-			password: userData.password
+			password: userData.password,
+			google_account_id: userData.google_account_id ? userData.google_account_id : ""
 		});
 
 		return user

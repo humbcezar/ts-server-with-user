@@ -1,9 +1,9 @@
-import { prop, Typegoose } from "typegoose";
-import { Types } from "mongoose";
+import {ModelType, prop, Ref, staticMethod, Typegoose} from "typegoose";
+import {User} from "./User";
 
 export class OAuth2Token extends Typegoose {
-	@prop()
-	userId: { type: Types.ObjectId, ref: "User" };
+	@prop({ ref: User, required: true })
+	user: Ref<User> & User;
 
 	@prop()
 	clientId: any;
@@ -12,11 +12,30 @@ export class OAuth2Token extends Typegoose {
 	accessToken: string;
 
 	@prop()
-	accessTokenExpiresOn: Date;
+	accessTokenExpiresAt: Date;
 
 	@prop()
 	refreshToken: string;
 
 	@prop()
-	refreshTokenExpiresOn: Date;
+	refreshTokenExpiresAt: Date;
+
+	@prop()
+	tokenId: string;
+
+	@prop()
+	tokenType: string;
+
+	@staticMethod
+	static updateOrCreate(
+		this: ModelType<OAuth2Token> & typeof OAuth2Token,
+		conditions: any,
+		data: any
+	) {
+		return this.findOneAndUpdate(
+			conditions,
+			data,
+			{upsert: true, new: true, runValidators: true}
+		);
+	}
 }

@@ -20,31 +20,38 @@ export class OAuth2Server {
 	}
 
 	public token = async(req: Request, res: Response) => {
-		req.body.grant_type = "password";
-		req.body.client_id = 1;
+		req.body.grant_type = req.body.grant_type == "refresh_token"
+			? "refresh_token"
+			: "password";
+		req.body.client_id = "1";
 		const oauthRequest = new OauthRequest(req);
 		const oauthResponse = new OauthResponse(res);
 
 		try {
 			const response = await this.server.token(oauthRequest, oauthResponse);
-			res.send(response);
+			return res.send(response);
 		} catch (err) {
-			return res.status(400).send(err.toString() + err.stack + " " + err.name);
+			return res.status(400).send("Invalid credentials");
 		}
 	};
 
 	public authenticate = async(req: Request, res: Response, next: NextFunction) => {
+		if (res.locals.authenticated) {
+			return next();
+		}
+		res.locals.authenticated = false;
 		const oauthRequest = new OauthRequest(req);
 		const oauthResponse = new OauthResponse(res);
 
 		try {
 			const response = await this.server.authenticate(oauthRequest, oauthResponse);
 			if (response) {
+				res.locals.authenticated = true;
 				return next();
 			}
 			return res.status(401).send("Unauthenticated");
 		} catch (err) {
-			return res.status(400).send(err.toString() + err.stack + " " + err.name);
+			return res.status(401).send("Unauthenticated");
 		}
 	};
 }

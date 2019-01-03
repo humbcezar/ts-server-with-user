@@ -1,12 +1,12 @@
-import { instanceMethod, plugin, prop, Typegoose } from "typegoose";
+import {InstanceType, instanceMethod, ModelType, plugin, prop, staticMethod, Typegoose} from "typegoose";
 
 @plugin(require("mongoose-bcrypt"),  {
 	fields: ["password"]
 })
 export class User extends Typegoose {
 	@prop({
-		required: true,
-		unique: true
+		unique: true,
+		required: true
 	})
 	username: string;
 
@@ -23,16 +23,27 @@ export class User extends Typegoose {
 	})
 	email: string;
 
-	@prop({
-		required: true
-	})
+	@prop({required: true})
 	password: string;
 
+	@prop()
+	name: string;
+
+	@prop()
+	google_account_id: string;
+
 	@instanceMethod
-	show() {
+	show(this: InstanceType<User>) {
 		return {
+			id: this.id,
 			username: this.username,
 			email: this.email
 		};
+	}
+
+	@staticMethod
+	static getUserByEmail(this: ModelType<User> & typeof User, email: string) {
+		return this.findOne({email})
+			.exec();
 	}
 }
