@@ -26,7 +26,7 @@ export class Auth {
 		this.creator = creator;
 	}
 
-	token = async(code: string) => {
+	async token(code: string) {
 		const tokens = await this.googleOAuth2Client.getTokens(code);
 		this.googleOAuth2Client.setCredentials(tokens);
 		const userInfo = await this.googleOAuth2Client.getUserInfo();
@@ -44,9 +44,9 @@ export class Auth {
 		});
 
 		return this.saveToken(newUser, tokens);
-	};
+	}
 
-	authenticate = async(accessToken: string) => {
+	async authenticate(accessToken: string) {
 		const token = await this.oauth2TokenModel.findOne({
 			$or: [{
 					accessToken
@@ -72,7 +72,7 @@ export class Auth {
 		const userInfo = await this.googleOAuth2Client.getUserInfo();
 
 		return userInfo.data.email == token.user.email;
-	};
+	}
 
 	private findUser = (userInfo) => {
 		return this.userModel.findOneAndUpdate(

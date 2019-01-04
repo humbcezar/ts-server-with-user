@@ -8,8 +8,6 @@ import {OAuth2Token} from "../../../src/Models/OAuth2Token";
 import {anything} from "ts-mockito";
 const mockReqRes = require("mock-req-res");
 
-
-
 describe("unit/Middlewares/OAuth2Server", () => {
 
 	it("should issue token for existing user using password grant", async () => {
@@ -149,6 +147,91 @@ describe("unit/Middlewares/OAuth2Server", () => {
 		const response = await oauth2Server.token(req, res);
 
 		expect(response).toBe("Invalid credentials");
+	});
+
+	it("should authenticate", async () => {
+		const creator = container.get<Creator>(Creator);
+		const password = randomString.generate(5);
+		const user = await creator.create({
+			username: randomString.generate(10),
+			email: randomString.generate(5) + "@" + randomString.generate(5) + ".com",
+			password: password,
+		});
+
+		const oauth2tokenModel = new OAuth2Token().getModelForClass(OAuth2Token);
+		const oauth2token = new oauth2tokenModel({
+			"user": user.id,
+			"clientId": 1,
+			"accessToken": randomString.generate(10),
+			"accessTokenExpiresAt": new Date(new Date(new Date().getTime() + 5000000000)),
+			"refreshToken": randomString.generate(10),
+			"refreshTokenExpiresAt": new Date(new Date(new Date().getTime() + 5000000000))
+		});
+		await oauth2token.save();
+
+		const oauth2Server = container.get<OAuth2Server>(OAuth2Server);
+
+		const req = mockReqRes.mockRequest();
+
+		mockRequestHeader(req);
+		req.headers.Authorization = "Bearer " + oauth2token.accessToken;
+
+		req.method = "POST";
+		const res = {
+			...anything(),
+			...{
+				send(arg) {
+					return arg;
+				},
+				status() {
+					return this;
+				},
+				locals: {
+					authenticated: false
+				}
+			}
+		};
+
+		const next = () => {
+			return "called";
+		};
+
+		const response = await oauth2Server.authenticate(req, res, next);
+
+		expect(response).toBe("called");
+	});
+
+	it("should not authenticate", async () => {
+		const oauth2Server = container.get<OAuth2Server>(OAuth2Server);
+
+		const req = mockReqRes.mockRequest();
+
+		mockRequestHeader(req);
+		req.headers.Authorization = "Bearer gibberish";
+
+		req.method = "POST";
+		const res = {
+			...anything(),
+			...{
+				send(arg) {
+					return arg;
+				},
+				status() {
+					return this;
+				},
+				locals: {
+					authenticated: false
+				}
+			}
+		};
+
+		const next = () => {
+			return "";
+		};
+
+		const response = await oauth2Server.authenticate(req, res, next);
+
+		expect(response).toBe("Unauthenticated");
 	});
 });
 

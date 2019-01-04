@@ -13,15 +13,14 @@ export class GoogleAuth {
 	}
 
 	token = async(req: Request, res: Response,  next: NextFunction) => {
-		console.log(213);
 		if (!req.query.code) {
 			next();
 		}
 		try {
 			const token = await this.googleAuth.token(req.query.code);
-			res.send(token);
+			return res.send(token);
 		} catch (err) {
-			return res.status(400).send(err.toString() + err.stack);
+			return res.status(400).send("Invalid credentials");
 		}
 	};
 
