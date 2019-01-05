@@ -1,4 +1,4 @@
-import "../testBase";
+import "../../testBase";
 import "jest";
 import { UserController } from "../../../src/Controllers/UserController";
 import { anything, instance, mock, verify, when } from "ts-mockito";

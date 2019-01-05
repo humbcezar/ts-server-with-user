@@ -1,4 +1,4 @@
-import "../testBase";
+import "../../testBase";
 import "jest";
 import {GoogleAuth} from "../../../src/Middlewares/GoogleAuth";
 import {Auth} from "../../../src/Services/GoogleClient/Auth";

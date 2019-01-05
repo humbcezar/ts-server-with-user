@@ -1,11 +1,11 @@
-import "../testBase";
+import "../../testBase";
 import "jest";
 import {OAuth2Server} from "../../../src/Middlewares/OAuth2Server";
 import container from "../../../src/inversify.config";
 import {Creator} from "../../../src/Services/User/Creator";
 import * as randomString from "randomstring";
-import {OAuth2Token} from "../../../src/Models/OAuth2Token";
 import {anything} from "ts-mockito";
+import createOAuth2Token from "../../factories/OAuth2Token";
 const mockReqRes = require("mock-req-res");
 
 describe("unit/Middlewares/OAuth2Server", () => {
@@ -83,16 +83,7 @@ describe("unit/Middlewares/OAuth2Server", () => {
 			password: password,
 		});
 
-		const oauth2tokenModel = new OAuth2Token().getModelForClass(OAuth2Token);
-		const oauth2token = new oauth2tokenModel({
-			"user": user.id,
-			"clientId": 1,
-			"accessToken": randomString.generate(10),
-			"accessTokenExpiresAt": new Date(),
-			"refreshToken": randomString.generate(10),
-			"refreshTokenExpiresAt": new Date(new Date(new Date().getTime() + 5000000000))
-		});
-		await oauth2token.save();
+		const oauth2token = await createOAuth2Token({"user": user.id});
 
 		const oauth2Server = container.get<OAuth2Server>(OAuth2Server);
 
@@ -158,16 +149,7 @@ describe("unit/Middlewares/OAuth2Server", () => {
 			password: password,
 		});
 
-		const oauth2tokenModel = new OAuth2Token().getModelForClass(OAuth2Token);
-		const oauth2token = new oauth2tokenModel({
-			"user": user.id,
-			"clientId": 1,
-			"accessToken": randomString.generate(10),
-			"accessTokenExpiresAt": new Date(new Date(new Date().getTime() + 5000000000)),
-			"refreshToken": randomString.generate(10),
-			"refreshTokenExpiresAt": new Date(new Date(new Date().getTime() + 5000000000))
-		});
-		await oauth2token.save();
+		const oauth2token = await createOAuth2Token({"user": user.id});
 
 		const oauth2Server = container.get<OAuth2Server>(OAuth2Server);
 

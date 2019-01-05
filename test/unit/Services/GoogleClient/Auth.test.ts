@@ -1,4 +1,4 @@
-import "../../testBase";
+import "../../../testBase";
 import "jest";
 import {GoogleOAuth2Client} from "../../../../src/Services/GoogleClient/GoogleOAuth2Client";
 import {Auth} from "../../../../src/Services/GoogleClient/Auth";

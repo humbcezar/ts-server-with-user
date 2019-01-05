@@ -33,5 +33,4 @@ container.bind("OriginalOAuth2Server").toConstantValue(
 		alwaysIssueNewRefreshToken: false
 	})
 );
-
 export default container;

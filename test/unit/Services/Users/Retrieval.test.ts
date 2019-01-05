@@ -2,7 +2,7 @@ import { Retrieval } from "../../../../src/Services/User/Retrieval";
 import { User } from "../../../../src/Models/User";
 import * as assert from "assert";
 import "jest";
-import "../../testBase";
+import "../../../testBase";
 
 describe("unit/Services/User/Retrieval.test.ts", async () => {
 	describe("retrieve(userData)", () => {

@@ -33,9 +33,12 @@ export class UserController {
 	show = async (req: Request, res: Response): Promise<Response> => {
 		try {
 			const user = await this.retrievalService.retrieve(req.params.userName);
-			return res.send(user);
+			if (user) {
+				return res.send(user);
+			}
+			return res.status(404).send("User not found");
 		} catch (err) {
-			return res.status(400).send(err.toString() + err.stack);
+			return res.status(404).send("User not found");
 		}
 	};
 
@@ -48,12 +51,9 @@ export class UserController {
 	store = async(req: Request, res: Response): Promise<Response> => {
 		try {
 			const user = await this.creatorService.create(req.body);
-			return res.send(user);
+			return res.status(201).send(user);
 		} catch (err) {
-			if (err instanceof Error.ValidationError || err instanceof MongoError ) {
-				return res.status(400).send("Username or email already exists.");
-			}
-			return res.status(400).send(err.toString() + err.stack);
+			return res.status(400).send("Invalid username or email.");
 		}
 	};
 }
