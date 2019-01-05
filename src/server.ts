@@ -1,10 +1,13 @@
 import app from "./app";
+import container from "./inversify.config";
 
-const server = app.listen(app.get("port"), () => {
+const application = app(container);
+
+const server = application.listen(application.get("port"), () => {
 	console.log(
 		"  App is running at http://localhost:%d in %s mode",
-		app.get("port"),
-		app.get("env")
+		application.get("port"),
+		application.get("env")
 	);
 	console.log("  Press CTRL-C to stop\n");
 });

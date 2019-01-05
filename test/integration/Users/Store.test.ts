@@ -4,6 +4,7 @@ import app from "../../../src/app";
 import {createHeader} from "../../utils";
 import request = require("supertest");
 import * as randomString from "randomstring";
+import container from "../../../src/inversify.config";
 
 describe("test/integration/Users/Store.test.ts", () => {
 	it("should store user", async() => {
@@ -12,7 +13,7 @@ describe("test/integration/Users/Store.test.ts", () => {
 			password: randomString.generate(10),
 			email: randomString.generate(5) + "@" + randomString.generate(5) + ".com"
 		};
-		const response = await request(app)
+		const response = await request(app(container))
 			.post("/api/users")
 			.set(createHeader())
 			.send(user);
@@ -21,7 +22,7 @@ describe("test/integration/Users/Store.test.ts", () => {
 	});
 
 	it("should not store user", async () => {
-		const response = await request(app)
+		const response = await request(app(container))
 			.post("/api/users")
 			.set(createHeader());
 		expect(response.status).toBe(400);

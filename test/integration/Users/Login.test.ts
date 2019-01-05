@@ -5,12 +5,13 @@ import request = require("supertest");
 import * as randomString from "randomstring";
 import createUser from "../../factories/User";
 import {createHeader} from "../../utils";
+import container from "../../../src/inversify.config";
 
 describe("test/integration/Users/Login.test", () => {
 	it("should login", async () => {
 		const password = randomString.generate(12);
 		const user = await createUser({password});
-		const response = await request(app)
+		const response = await request(app(container))
 			.post("/api/users/login")
 			.set(createHeader())
 			.type("form")
@@ -19,7 +20,7 @@ describe("test/integration/Users/Login.test", () => {
 	});
 
 	it("should not login", async () => {
-		const response = await request(app).post("/api/users/login");
+		const response = await request(app(container)).post("/api/users/login");
 		expect(response.status).toBe(400);
 		expect(response.text).toBe("Invalid credentials");
 	});
