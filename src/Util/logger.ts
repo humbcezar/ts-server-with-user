@@ -1,10 +1,14 @@
 import * as winston from "winston";
+import * as util from "util";
 
 const formatter = winston.format.printf(info => {
 	if (info.stack) {
-		return new Date(info.timestamp) + "\n" + info.stack;
+		return new Date().toString() + "\n" + info.stack;
 	}
-	return new Date(info.timestamp) + "\n" + info.message;
+	const message = typeof info.message == "object"
+		? util.inspect(info.message)
+		: info.message ;
+	return new Date().toString() + "\n" + message;
 });
 
 const logger = winston.createLogger({
