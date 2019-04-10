@@ -4,7 +4,7 @@ import * as assert from "assert";
 import "jest";
 import "../../../testBase";
 
-describe("unit/Services/User/Retrieval.test.ts", async () => {
+describe("unit/Services/User/Retrieval.test.ts", () => {
 	describe("retrieve(userData)", () => {
 		const userModel = new User().getModelForClass(User);
 		const retrieval = new Retrieval(userModel);

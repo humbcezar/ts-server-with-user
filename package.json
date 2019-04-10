@@ -33,7 +33,7 @@
     "oauth2-server": "^3.0.1",
     "randomstring": "^1.1.5",
     "reflect-metadata": "^0.1.12",
-    "typegoose": "^5.4.1",
+    "typegoose": "^5.6.0",
     "winston": "^3.1.0"
   },
   "devDependencies": {
@@ -52,12 +52,12 @@
     "@types/winston": "^2.4.4",
     "chai": "^4.2.0",
     "concurrently": "^4.1.0",
-    "jest": "^23.6.0",
+    "jest": "^24.7.1",
     "mock-req-res": "^1.0.2",
     "nodemon": "^1.18.7",
     "sinon": "^7.1.1",
     "supertest": "^3.3.0",
-    "ts-jest": "^23.10.5",
+    "ts-jest": "^24.0.2",
     "ts-mockito": "^2.3.1",
     "ts-node": "^7.0.1",
     "tslint": "^5.11.0",
