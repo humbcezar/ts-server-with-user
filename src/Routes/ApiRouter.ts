@@ -36,6 +36,14 @@ export class ApiRouter {
 			}
 		);
 
+		router.post(
+			"/users/authenticate",
+			this.googleAuth.authenticate,
+			this.oAuth2Server.authenticate,
+			(req, res) => {
+				return res.send({});
+			}
+		);
 		router.post("/users/login", this.oAuth2Server.token);
 		router.get("/users/external/login", this.googleAuth.token);
 		router.get("/users/:userName", this.userController.show);
