@@ -21,7 +21,7 @@ export class OAuth2Model {
 	async getUser(username: string, password: string): Promise<User | Falsey> {
 		let user;
 		try {
-			user = await this.userModel.findOne({username: username})
+			user = await this.userModel.findOne({$or: [{username}, {email: username}]})
 				.exec()
 				.then(user => {
 					if (user) {
